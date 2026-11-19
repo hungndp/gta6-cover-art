@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Neon Vice Cover Studio — GTA 6-style cover art maker</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark">NV</span>
+    <div>
+      <h1>Neon Vice Cover Studio</h1>
+      <p class="tagline">Turn your photos into GTA 6-style multi-panel poster cover art — offline, in your browser.</p>
+    </div>
+  </div>
+  <div class="top-actions">
+    <label class="btn btn-primary" for="fileInput">+ Add photos</label>
+    <input type="file" id="fileInput" accept="image/*" multiple hidden>
+    <button class="btn" id="demoBtn" type="button">Load demo photos</button>
+    <button class="btn" id="clearBtn" type="button">Clear</button>
+  </div>
+</header>
+
+<main class="layout">
+  <section class="stage-wrap" id="dropZone">
+    <canvas id="stage" width="1080" height="1080"></canvas>
+    <p class="drop-hint" id="dropHint">Drop photos here, or use “+ Add photos”. Click a panel to select it, drag to pan, scroll to zoom.</p>
+    <div class="size-tabs" role="group" aria-label="Cover size">
+      <button type="button" data-size="1080x1080" class="size-tab active">1080 × 1080</button>
+      <button type="button" data-size="1080x1350" class="size-tab">1080 × 1350</button>
+      <button type="button" data-size="1920x1080" class="size-tab">1920 × 1080</button>
+    </div>
+  </section>
+
+  <aside class="panel">
+    <section class="control-block">
+      <h2>1 · Layout template</h2>
+      <div class="template-grid" id="templateGrid"></div>
+    </section>
+
+    <section class="control-block">
+      <h2>2 · Selected panel</h2>
+      <p class="panel-name" id="panelName">Panel 1</p>
+      <label class="field">Photo in this panel
+        <select id="panelPhoto"></select>
+      </label>
+      <label class="field">Zoom
+        <input type="range" id="panelZoom" min="1" max="3" step="0.01" value="1.15">
+      </label>
+      <div class="row">
+        <button class="btn btn-small" id="fillAllBtn" type="button">Fill all panels with this photo</button>
+        <button class="btn btn-small" id="resetPanBtn" type="button">Reset pan / zoom</button>
+      </div>
+      <p class="hint">Tip: click any panel on the preview, then drag it to reposition the photo and scroll to zoom.</p>
+    </section>
+
+    <section class="control-block">
+      <h2>3 · Caption</h2>
+      <label class="field">Caption text
+        <input type="text" id="captionText" value="VICE CITY" maxlength="40" spellcheck="false">
+      </label>
+      <div class="row">
+        <label class="field grow">Style
+          <select id="captionStyle">
+            <option value="solid">Solid condensed</option>
+            <option value="outline">Outline</option>
+            <option value="neon">Neon glow</option>
+            <option value="sunset">Sunset gradient</option>
+          </select>
+        </label>
+        <label class="field grow">Placement
+          <select id="captionPlace">
+            <option value="bottom">Bottom</option>
+            <option value="top">Top</option>
+            <option value="banner">Center banner</option>
+          </select>
+        </label>
+      </div>
+      <label class="field">Letter size
+        <input type="range" id="captionSize" min="40" max="160" step="1" value="96">
+      </label>
+    </section>
+
+    <section class="control-block">
+      <h2>4 · Colour grade</h2>
+      <div class="grade-grid" id="gradeGrid"></div>
+    </section>
+
+    <section class="control-block export-block">
+      <h2>5 · Export PNG</h2>
+      <div class="export-row">
+        <button class="btn btn-export" id="exportSquare" type="button">PNG · 1080 × 1080</button>
+        <button class="btn btn-export" id="exportPortrait" type="button">PNG · 1080 × 1350</button>
+        <button class="btn btn-export" id="exportWide" type="button">PNG · 1920 × 1080</button>
+      </div>
+      <p class="hint">Exports render at full resolution straight from the canvas — no upload, no server.</p>
+    </section>
+  </aside>
+</main>
+
+<footer class="foot">
+  <p>Neon Vice Cover Studio — original artwork made from your own photos. Not affiliated with Rockstar Games. Fonts: Anton, Archivo Black &amp; Oswald (SIL Open Font License).</p>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
