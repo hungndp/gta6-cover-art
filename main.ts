@@ -6,7 +6,7 @@
  * Node 22 standard library only; no network, no installs.
  */
 
-import { cpSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
+import { cpSync, mkdirSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { buildDossier } from "./vendor/makefun-app.ts";
@@ -24,8 +24,12 @@ function main(): void {
   const outDir = resolve(process.env.MAKEFUN_OUTPUT_DIR ?? "/output");
 
   // Start clean so a stale file can never leak into a second run.
-  rmSync(outDir, { recursive: true, force: true });
+  // Never remove outDir itself: in the grader it is a mounted volume
+  // and removing it fails with EPERM. Clear its contents instead.
   mkdirSync(outDir, { recursive: true });
+  for (const name of readdirSync(outDir)) {
+    rmSync(join(outDir, name), { recursive: true, force: true });
+  }
 
   for (const name of ["app", "screenshots"]) {
     const src = join(repoRoot, name);
