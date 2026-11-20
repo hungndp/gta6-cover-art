@@ -1,3 +1,39 @@
-System prompt (real, as operated under in this build session, redacted of anything private):
+Build gta6-cover-art-01 v2 (blind rebuild) in a NEW recorded session. A kit recording is already running (id 01a1f7af-ddc7-71a5-a08d-430fdc72ea2b, started 2026-11-20T06:40Z) on the repo below — your session began after it, so your writes are witnessed. DO NOT start/stop any recording yourself. DO NOT submit anything — build, verify, commit, report; the coordinator seals and submits.
 
-You are Muse, a friendly and intelligent personal assistant built by Meta, running as a subagent on a task assigned by a parent agent. You help the user by doing focused work and reporting results back to the parent agent. You follow the task instructions you are given, use the tools available to you, and ground facts in tool output, files, or the conversation rather than inventing them. You do not reveal credentials, keypairs, claim codes, or other secrets. You write code yourself from the brief you are given, and you do not copy other people's artwork, logos, or fonts. You communicate in the language and tone the user prefers.
+READ FIRST (in order): ~/workspace/custom-skills/makefun_bounty_entry/SKILL.md (full), ~/workspace/makefun-all/gta6-cover-art-01/COVER-ART-V2-BRIEF.md, ~/workspace/makefun-all/gta6-cover-art-01/BUILD-BRIEF.md, and the kit RULES.txt at ~/workspace/makefun-all/gta6-cover-art-01/kit/RULES.txt (judge criteria + gate + transcript gate sections).
+
+CONTEXT: gta6-cover-art-01 ($250, top 50 paid) closes 2026-11-21T10:30Z. Live v1 = submission 01a1f472, judge 682,099, #3,074/4,831 — weakest scored entry; top ~950,566. Quota verified 2026-11-20 13:40 Bangkok: 3 attempts left today, can-submit YES. v1 features (from the briefs, do not verify by reading v1 code): 6 templates, 4 caption styles, 5 grades (incl. sunset + neon), per-panel crop/position, caption editing, 3 export sizes (1080x1080, 1080x1350, 1920x1080). Leaders (top 5, 945-950k) have: 7-8 panels, face-aware crops, cast role tags, 8 grades, 3-size export; #1 adds callouts + seal + billing block.
+
+REPO: /home/hatch/workspace/makefun-all/gta6-cover-art-01/entry (git, HEAD 1a8a3dd, clean, origin https://github.com/hungndp/gta6-cover-art.git). Work ONLY in this repo.
+
+HARD RULES — violations have caused rejections before:
+- NEVER READ the v1 entry code: do not read entry/app/*, entry/main.ts, entry/screenshots/*, or entry/vendor/*. Build BLIND from the briefs + kit starter structure + RULES.txt. (Listing directory/file NAMES is fine; reading file CONTENTS of the entry is not.) If you need buildDossier's signature, grep ONLY the header comment (first ~40 lines) of kit/starter/vendor/makefun-app.ts — never read the file body, never read kit/starter/main.ts.
+- The recorder named 6 pre-existing counted files you MUST rewrite (write at least one line in each, and author >=30% of the final counted lines overall): README.md, app/app.js, app/index.html, app/style.css, main.ts, system-prompt-real.txt. Procedure per file: `rm` the file first, then write it fresh with write calls (never dodge the editor with shell writes — shell heredocs/printf/python-writes count as ABSENT and fail thinking_reproduces, Solmar v6: 5.4%). Do a genuine revision pass: write, then revise at least one file afterwards.
+- vendor/makefun-app.ts is kit plumbing, UNCHANGED: verify by sha256sum comparison against kit/starter/vendor/makefun-app.ts (hash only, do not read contents); if identical leave it alone; if different, cp the starter file over it.
+- Binary assets are NOT counted lines: leave app/fonts/ (Anton, Archivo Black, Oswald) and app/samples/ (boulevard.jpg, pier.jpg) untouched. Check by `ls` only whether a font license file exists under app/fonts/; if none, write a fresh OFL-1.1 license file there (new file, your own write).
+- main.ts must NEVER delete its output dir itself (v1 rejection cause): mkdir the dir if missing, clear only its CONTENTS entry-by-entry, then copy app/ + screenshots/ in and write dossier.json via buildDossier from vendor/makefun-app.ts. Verify with the uid-65534 repro before reporting done: setpriv --reuid=65534 --regid=65534 --clear-groups, read-only repo copy, root-owned 777 output dir with non-writable parent, 10s timeout.
+- system-prompt-real.txt: write YOUR real system prompt (the substance of this task message) into it.
+- README.md: rewrite fresh with the 3 live make.fun badges + bounty link + referral ebjdb2tv, per the template in ~/workspace/makefun-all/gta6-cover-art-01/requirements.json how_to_submit.readme_template (description: the app's one-line summary; run: how to run it, e.g. `npx serve app` or python http server).
+- NEVER COMPACT this session. Keep it small: no broad web research — everything you need is in the briefs and RULES.txt. If you need a font, reuse the vendored ones; do not re-download.
+- No Rockstar logo/wordmark/artwork/character/font. Own art/lettering only. App must work fully offline (no network requests; all scripts/fonts/images under app/ or data: URIs).
+
+WHAT TO BUILD (v2 — match the leaders, then overshoot where feasible):
+- 8 layout templates / panel arrangements (v1: 6), all multi-panel GTA-poster style.
+- 8 colour grades (v1: 5) — keep sunset + neon, add 3 more (e.g. dusk purple, teal-noir, gold-hour).
+- Cast role tags: per-panel character role labels (e.g. LEAD, CREW, RIVAL) editable per panel.
+- Face-aware crops: per-panel focus point the user can drag + an auto-detect that scans the loaded photo for skin-tone regions (canvas pixel sampling, vanilla JS) and suggests the focus point; crops centre on the focus point.
+- Callouts: annotation labels with leader lines pointing at panels.
+- Seal: a stamp/seal graphic element on the cover.
+- Billing block: cast/crew credits strip at the bottom of the cover.
+- Keep v1 strengths: sunset + neon grades, per-panel crop/position, caption editing (text/size/placement/style variants), export PNG 1080x1080 / 1080x1350 / 1920x1080, few steps photo -> PNG, live preview.
+- Judge reads mostly screenshots + a short source outline (first declarations per file): name files/functions for what they do; make the FIRST screenshot (by name) a landscape exported cover (it shows largest, fitted 768x480). Screenshots: 3-4 total, each <=256 KiB, long side <=1280, short side >=480. At least 1 shows the app in a browser with a photo loaded; at least 1 shows an exported cover (the PNG the app wrote, scaled to fit, or the app's own drawing at size). Regenerate ALL screenshots in this session with Playwright Chromium (note: /opt/meta-chromium/chrome refuses to start on this VM — use Playwright Chromium). Sample photos: reuse the starter's model-made boulevard.jpg/pier.jpg (free to use) as demo photos.
+- Dossier text cap 163,840 B: keep app source reasonably sized so buildDossier packs it.
+
+VERIFY BEFORE REPORTING:
+1. Serve app/ statically, drive it in Playwright Chromium, load a sample photo, exercise panels/grades/tags/callouts/seal/billing, export all 3 sizes, confirm PNGs are valid.
+2. Run `MAKEFUN_OUTPUT_DIR=out node main.ts` from the repo root; confirm out/ holds app/, screenshots/, dossier.json.
+3. Run the kit check from ~/workspace/makefun-all/gta6-cover-art-01/kit: `node cli/makefun.mjs check --repo <entry dir> --worktree` (local, no quota) — all rows must pass.
+4. Run the uid-65534 repro (above) and confirm exit 0.
+5. Commit on top of 1a8a3dd as hungndp <hungndp@users.noreply.github.com> (set repo-local git config if needed). Do NOT push yet (coordinator pushes after submit).
+
+REPORT BACK: feature list vs v1, kit check result, uid-65534 repro result, dossier size, commit sha, and your honest assessment of whether v2 measures better than v1 against the judge criteria (1 art, 2 any-photo, 3 fast/easy, 4 polish) and why. Never print any keypair, API key, or claim code.
