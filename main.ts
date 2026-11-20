@@ -1,52 +1,28 @@
 // Neon Vice Cover Studio v3 — make.fun entrypoint.
-//
-// The grader mounts the output directory itself, so this script must
-// never remove the directory: it creates it if needed, clears only the
-// entries INSIDE it, then copies the app and screenshots in and writes
-// the dossier the scorer expects.
-import { chmodSync, cpSync, mkdirSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { buildDossier } from './vendor/makefun-app.ts';
+// Copies the static app and the screenshots into the output directory and
+// writes the dossier the grader compares byte for byte. The output directory
+// itself is a mounted volume: it is created if missing and only its contents
+// are cleared, entry by entry — the directory is never removed.
+import { cpSync, mkdirSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+import { buildDossier } from "./vendor/makefun-app.ts";
 
-const rootDir = dirname(fileURLToPath(import.meta.url));
-const outDir = process.env.MAKEFUN_OUTPUT_DIR || '/output';
+const repoDir = dirname(fileURLToPath(import.meta.url));
+const outputDir = process.env.MAKEFUN_OUTPUT_DIR ?? "/output";
 
-mkdirSync(outDir, { recursive: true });
-
-// Remove one entry from the output dir. A previous run may have copied in
-// read-only directory modes (source checkouts can be a-w), which would
-// otherwise make a re-run fail while emptying a folder it owns: loosen
-// the modes on our own leftovers, then remove.
-function clearEntry(path: string): void {
-  try {
-    rmSync(path, { recursive: true, force: true });
-  } catch {
-    const loosen = (p: string): void => {
-      const st = statSync(p);
-      chmodSync(p, st.isDirectory() ? 0o755 : 0o644);
-      if (st.isDirectory()) for (const name of readdirSync(p)) loosen(join(p, name));
-    };
-    loosen(path);
-    rmSync(path, { recursive: true, force: true });
-  }
+mkdirSync(outputDir, { recursive: true });
+for (const entry of readdirSync(outputDir)) {
+  rmSync(join(outputDir, entry), { recursive: true, force: true });
 }
 
-// Clear the previous run's contents without touching the directory itself.
-for (const name of readdirSync(outDir)) {
-  clearEntry(join(outDir, name));
-}
+cpSync(join(repoDir, "app"), join(outputDir, "app"), { recursive: true });
+cpSync(join(repoDir, "screenshots"), join(outputDir, "screenshots"), { recursive: true });
 
-cpSync(join(rootDir, 'app'), join(outDir, 'app'), { recursive: true });
-cpSync(join(rootDir, 'screenshots'), join(outDir, 'screenshots'), { recursive: true });
+// buildDossier reads app/ and screenshots/ from one root directory and caps
+// the source text it embeds at the competition's 160 KiB dossier limit.
+const dossier = buildDossier(outputDir, { text_max_bytes: 163_840 });
+writeFileSync(join(outputDir, "dossier.json"), dossier);
 
-const dossier = buildDossier(outDir, {
-  text_max_bytes: 163840,
-  screenshots: { max: 4, max_bytes: 262144 },
-  app_max_files: 993,
-  app_max_bytes: 48 * 1024 * 1024,
-});
-writeFileSync(join(outDir, 'dossier.json'), dossier);
-
-const shotCount = readdirSync(join(outDir, 'screenshots')).length;
-console.log(`neon-vice-cover-studio: wrote app/, screenshots/ (${shotCount} shots) and dossier.json (${dossier.length} bytes) to ${outDir}`);
+const dossierBytes = Buffer.byteLength(dossier);
+console.log(`Neon Vice Cover Studio v3 handed in: app/ + screenshots/ + dossier.json (${dossierBytes} bytes) -> ${outputDir}`);

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Neon Vice Cover Studio v3 — Multi-Panel Poster Maker</title>
+<title>Neon Vice Cover Studio v3 — GTA-Style Cover Art Maker</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -12,171 +12,111 @@
     <span class="brand-mark">NV</span>
     <div class="brand-text">
       <h1>Neon Vice Cover Studio <em>v3</em></h1>
-      <p>Multi-panel crime-epic poster maker — your photos, your cover.</p>
+      <p>Turn your photos into multi-panel Vice City cover art. Fully offline — photos never leave your machine.</p>
     </div>
   </div>
   <div class="top-actions">
-    <button class="btn ghost" id="export1080sq" type="button">PNG 1080×1080</button>
-    <button class="btn ghost" id="export1080x1350" type="button">PNG 1080×1350</button>
-    <button class="btn ghost" id="export1920" type="button">PNG 1920×1080</button>
-    <button class="btn primary" id="exportAll" type="button">Export All</button>
+    <label class="file-btn">Add photos<input id="photoInput" type="file" accept="image/*" multiple hidden></label>
+    <button id="demoBtn" type="button">Load demo photos</button>
+    <button id="exportBtn" type="button" class="primary">Export PNG</button>
+    <button id="exportAllBtn" type="button">Export all sizes</button>
   </div>
 </header>
 
-<div id="workbench">
+<main id="layout">
   <aside id="controls">
-    <section class="card">
-      <h2>1 · Photos</h2>
-      <div class="row">
-        <label class="btn small primary" for="fileInput">Add photos</label>
-        <input id="fileInput" type="file" accept="image/*" multiple hidden>
-        <button class="btn small" id="loadSamples" type="button">Load samples</button>
-        <button class="btn small" id="addScenes" type="button">Art cards</button>
-      </div>
-      <div id="photoStrip" class="photo-strip"><p class="hint">No photos yet — add your own, load the bundled samples, or drop files anywhere on the window.</p></div>
-      <p class="hint">Click a thumbnail to assign it to the selected panel. Drag on the poster to pan a photo; scroll to zoom.</p>
+    <section class="panel-block">
+      <h2>1 · Photos &amp; panels</h2>
+      <div id="photoStrip" class="photo-strip"><span class="hint">No photos yet — add your own or load the demo pair.</span></div>
+      <label class="row">Panel photo
+        <select id="panelPhotoSelect"></select>
+      </label>
+      <label class="row">Zoom <input id="zoomRange" type="range" min="100" max="300" value="100"></label>
+      <p class="hint">Click a panel on the poster to select it, then drag inside it to move the face-aware focus point.</p>
+      <label class="check"><input id="faceAwareToggle" type="checkbox" checked> Face-aware crop (skin-tone scan, faces first)</label>
+      <label class="check"><input id="paintedToggle" type="checkbox"> Painted panel filter (posterize + edge paint) for selected panel</label>
     </section>
 
-    <section class="card">
-      <h2>2 · Layout &amp; canvas</h2>
-      <label class="field">Template
-        <select id="layoutSel">
-          <option value="duo">Duo Split — 2 panels</option>
-          <option value="trio">Trio Row — 3 panels</option>
-          <option value="quad">Quad Grid — 4 panels</option>
-          <option value="heroStrip">Hero + Strip — 3 panels</option>
-          <option value="fiveStack">Headline Five — 5 panels</option>
-          <option value="sixGrid">Six Grid — 6 panels</option>
-          <option value="sevenMix">Seven Mix — 7 panels</option>
-          <option value="mosaic8">Mosaic — 8 panels</option>
-          <option value="heatwave">Heatwave — slanted, title over art</option>
-          <option value="heroClose">Hero Close-Up — big face + 3 support</option>
-        </select>
-      </label>
-      <label class="field">Poster shape
-        <select id="aspectSel">
-          <option value="1080x1080">Square 1:1</option>
-          <option value="1080x1350">Portrait 4:5</option>
-          <option value="1920x1080">Wide 16:9</option>
-        </select>
-      </label>
-      <label class="check"><input type="checkbox" id="faceAwareChk" checked> Face-aware crop (people first)</label>
+    <section class="panel-block">
+      <h2>2 · Layout template</h2>
+      <div id="templateGrid" class="template-grid"></div>
+      <p class="hint" id="templateHint"></p>
     </section>
 
-    <section class="card">
-      <h2>3 · Title</h2>
-      <label class="field">Main title <input id="titleText" type="text" value="NEON VICE" maxlength="26"></label>
-      <label class="field">Subtitle <input id="subtitleText" type="text" value="ONE CITY · ONE SCORE" maxlength="48"></label>
-      <label class="field">Caption style
-        <select id="titleStyle">
-          <option value="block">Block</option>
-          <option value="outline">Outline</option>
-          <option value="neon">Neon Glow</option>
-          <option value="script">Retro Script</option>
-          <option value="minimal">Minimal Sans</option>
-          <option value="chrome">Retro Chrome</option>
-          <option value="chrome3d">Chrome 3D — extruded</option>
-        </select>
+    <section class="panel-block">
+      <h2>3 · Colour grade</h2>
+      <label class="row">Grade
+        <select id="gradeSelect"></select>
       </label>
-      <label class="field">Placement
-        <select id="titlePlace">
-          <option value="top">Top band</option>
-          <option value="bottom">Bottom band</option>
-          <option value="over">Over the art</option>
-        </select>
-      </label>
-      <label class="field">Title scale <input id="titleScale" type="range" min="60" max="150" value="100"></label>
+      <label class="row">Strength <input id="gradeRange" type="range" min="0" max="100" value="80"></label>
     </section>
 
-    <section class="card">
-      <h2>4 · Colour grade</h2>
-      <label class="field">Grade
-        <select id="gradeSel">
-          <option value="vice">Vice Sunset</option>
-          <option value="neon">Neon Night</option>
-          <option value="ocean">Ocean Drive</option>
-          <option value="candy">Candy Floss</option>
-          <option value="noir">Noir Crime</option>
-          <option value="golden">Golden Hour</option>
-          <option value="toxic">Toxic Palms</option>
-          <option value="midnight">Midnight Run</option>
-          <option value="portrait">Portrait Guard — protects skin</option>
+    <section class="panel-block">
+      <h2>4 · Caption &amp; title</h2>
+      <label class="row">Title <input id="titleInput" type="text" value="NEON VICE" maxlength="26"></label>
+      <label class="row">Subtitle <input id="subtitleInput" type="text" value="GRAND THEFT SUMMER" maxlength="40"></label>
+      <label class="row">Title style
+        <select id="captionStyleSelect">
+          <option value="1">1 · Classic Block</option>
+          <option value="2">2 · Neon Glow</option>
+          <option value="3">3 · Sunset Gradient</option>
+          <option value="4">4 · Flat Chrome</option>
+          <option value="5">5 · Outline Punch</option>
+          <option value="6">6 · Striped Retro-Chrome</option>
+          <option value="7" selected>7 · Extruded 3D Retro-Chrome</option>
         </select>
       </label>
-      <label class="field">Grade strength <input id="gradeStrength" type="range" min="0" max="100" value="85"></label>
+      <label class="check"><input id="autoFitToggle" type="checkbox" checked> Auto-fit title to poster width</label>
     </section>
 
-    <section class="card">
-      <h2>5 · Selected panel</h2>
-      <p id="panelInfo" class="hint">Panel 1 selected.</p>
-      <label class="field">Photo
-        <select id="panelPhotoSel"></select>
-      </label>
-      <label class="field">Zoom <input id="zoomSlider" type="range" min="100" max="320" value="100"></label>
-      <div class="row">
-        <button class="btn small" id="faceCropBtn" type="button">Face-aware crop</button>
-        <button class="btn small" id="resetPanelBtn" type="button">Reset crop</button>
-      </div>
-      <label class="check"><input type="checkbox" id="paintedChk"> Painted look (posterised ink)</label>
-      <label class="check"><input type="checkbox" id="popoutChk"> Pop-out hero cut-out (hero panel)</label>
-      <label class="field">Matte threshold <input id="matteRange" type="range" min="18" max="120" value="58"></label>
-      <label class="field">Cast role tag <input id="tagInput" type="text" placeholder="LEAD · DRIVER · MUSCLE…" maxlength="18"></label>
-      <div class="row">
-        <button class="btn small primary" id="autoTagBtn" type="button">Auto-tag cast</button>
-        <span class="hint">Faces get roles by size &amp; order.</span>
-      </div>
+    <section class="panel-block">
+      <h2>5 · Signature &amp; effects</h2>
+      <label class="check"><input id="popoutToggle" type="checkbox" checked> Pop-out hero cut-out (subject breaks out of its panel)</label>
+      <label class="check"><input id="goldenFrameToggle" type="checkbox" checked> “Golden Mile” signature gold frame</label>
+      <label class="check"><input id="sealToggle" type="checkbox" checked> Vice City seal stamp</label>
+      <label class="check"><input id="skyGlowToggle" type="checkbox" checked> Sky-glow gradient (Heatwave layouts)</label>
     </section>
 
-    <section class="card">
-      <h2>6 · Poster dressing</h2>
-      <label class="check"><input type="checkbox" id="frameChk"> Golden Mile frame</label>
-      <label class="check"><input type="checkbox" id="sealChk" checked> Vice City seal</label>
-      <label class="field">Seal position
-        <select id="sealPos">
-          <option value="br">Bottom right</option>
-          <option value="bl">Bottom left</option>
-          <option value="tr">Top right</option>
-          <option value="tl">Top left</option>
-        </select>
-      </label>
-      <label class="check"><input type="checkbox" id="billingChk" checked> Billing block</label>
-      <label class="field">Billing credits
-        <input id="billingText" type="text" value="A NEON VICE PRODUCTION · L. MARQUEZ · D. OKAFOR · R. SANTOS · K. VANCE · M. IBRAHIM" maxlength="140">
-      </label>
+    <section class="panel-block">
+      <h2>6 · Cast role tags</h2>
+      <div id="castList" class="cast-list"></div>
+      <button id="autoTagBtn" type="button">Auto-suggest cast tags</button>
+      <p class="hint">Suggestions use panel size, position and face presence. Every tag stays editable.</p>
     </section>
 
-    <section class="card">
+    <section class="panel-block">
       <h2>7 · Callouts</h2>
-      <div class="row">
-        <input id="calloutText" type="text" placeholder="THE GETAWAY CAR" maxlength="30">
-        <button class="btn small primary" id="addCalloutBtn" type="button">Add</button>
-      </div>
-      <ul id="calloutList" class="callout-list"></ul>
-      <p class="hint">Drag a callout box to move it; drag its dot to re-aim the leader line.</p>
+      <div id="calloutList" class="callout-list"></div>
+      <button id="addCalloutBtn" type="button">Add callout</button>
     </section>
 
-    <section class="card">
-      <h2>8 · Export</h2>
-      <div class="row wrap">
-        <button class="btn small" data-export="1080x1080" type="button">1080×1080</button>
-        <button class="btn small" data-export="1080x1350" type="button">1080×1350</button>
-        <button class="btn small" data-export="1920x1080" type="button">1920×1080</button>
-        <button class="btn small primary" id="exportAll2" type="button">Export All</button>
+    <section class="panel-block">
+      <h2>8 · Billing block</h2>
+      <textarea id="billingInput" rows="4">PALM BAY PICTURES PRESENTS A NEON VICE PRODUCTION “NEON VICE” STARRING YOU · YOUR CREW · THE WHOLE BOULEVARD
+MUSIC BY DJ MARLINSKI · EDITED BY R. COAST · SHOT ON LOCATION IN VICE CITY · NO SEAGULLS WERE CONSULTED</textarea>
+    </section>
+
+    <section class="panel-block">
+      <h2>9 · Export size</h2>
+      <div class="size-row" id="sizeRow">
+        <button type="button" data-size="1080x1080" class="size-btn active">1080 × 1080</button>
+        <button type="button" data-size="1080x1350" class="size-btn">1080 × 1350</button>
+        <button type="button" data-size="1920x1080" class="size-btn">1920 × 1080</button>
       </div>
-      <p class="hint" id="exportStatus">Exports render at full resolution, offscreen — photo to PNG in a couple of clicks.</p>
+      <p class="hint">Exports render fresh at full resolution from your original photos.</p>
     </section>
   </aside>
 
-  <main id="stageWrap">
-    <div id="stageBox">
-      <canvas id="stage" width="1080" height="1080"></canvas>
+  <section id="stage">
+    <div id="canvasWrap">
+      <canvas id="poster" width="1080" height="1080"></canvas>
     </div>
-    <p id="stageHint">Tip: click a panel to select it, drag to pan its photo, drag the ring to move the focus point.</p>
-  </main>
-</div>
+    <p id="statusLine">Studio ready. Demo photos load automatically so you can see a finished cover — swap in your own any time.</p>
+  </section>
+</main>
 
-<footer id="colophon">
-  <p>Neon Vice Cover Studio v3 — an original, offline poster tool. All lettering and art are our own; no third-party game artwork, logos or fonts. Bundled fonts are SIL OFL (see fonts/OFL.txt); sample photos ship with the studio.</p>
+<footer id="footer">
+  <span>Neon Vice Cover Studio v3 · an original fan-made tool · not affiliated with Rockstar Games · works 100% offline</span>
 </footer>
 
 <script src="app.js"></script>
