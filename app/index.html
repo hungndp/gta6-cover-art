@@ -3,160 +3,141 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Neon Vice Cover Studio — GTA 6-style cover art maker</title>
-<meta name="description" content="Turn your photos into a GTA 6-style multi-panel poster cover: 8 layouts, 8 colour grades, face-aware crops, cast role tags, callouts, seal and billing block. Export PNG in 1080x1080, 1080x1350 and 1920x1080. Fully offline.">
+<title>Neon Vice Cover Studio — GTA-style multi-panel cover art maker</title>
 <link rel="icon" href="data:,">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<header id="topBar">
-  <div id="brandBlock">
-    <h1 id="appTitle">NEON VICE <span id="appTitleAccent">COVER STUDIO</span></h1>
-    <p id="appTagline">GTA 6-style multi-panel poster covers — your photos, your cast, your city.</p>
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark">NV</span>
+    <div>
+      <h1 id="app-title">Neon Vice Cover Studio</h1>
+      <p class="tagline">Turn your photos into a Vice City poster — panels, grades, cast tags, seal &amp; billing.</p>
+    </div>
   </div>
-  <div id="quickStats">
-    <span id="statLayouts">8 layouts</span>
-    <span id="statGrades">8 grades</span>
-    <span id="statExport">3 PNG sizes</span>
+  <div class="top-actions">
+    <button id="btn-export-all" class="btn btn-primary" type="button">Export all 3 sizes</button>
   </div>
 </header>
 
-<main id="workbench">
-  <section id="previewPane" aria-label="Live cover preview">
-    <div id="previewToolbar">
-      <div id="sizePicker" role="group" aria-label="Preview size">
-        <button type="button" class="sizeBtn" id="sizeSquareBtn" data-size="square">Square 1080&times;1080</button>
-        <button type="button" class="sizeBtn" id="sizePortraitBtn" data-size="portrait">Portrait 1080&times;1350</button>
-        <button type="button" class="sizeBtn is-active" id="sizeLandscapeBtn" data-size="landscape">Landscape 1920&times;1080</button>
+<main class="layout">
+  <section class="controls" aria-label="Cover controls">
+    <div class="card" id="card-photo">
+      <h2>1 · Photos</h2>
+      <p class="hint">Upload your own photos, or start from the two built-in sample shots. Click a panel in the preview to select it, then drag on it to move its face focus point.</p>
+      <label class="field">Add photos to the selected panel
+        <input id="input-photo" type="file" accept="image/*" multiple>
+      </label>
+      <div class="row">
+        <button id="btn-sample-a" class="btn" type="button">Sample: Boulevard</button>
+        <button id="btn-sample-b" class="btn" type="button">Sample: Pier</button>
       </div>
-      <div id="exportCluster">
-        <button type="button" class="exportBtn" id="exportSquareBtn">PNG 1080&times;1080</button>
-        <button type="button" class="exportBtn" id="exportPortraitBtn">PNG 1080&times;1350</button>
-        <button type="button" class="exportBtn" id="exportLandscapeBtn">PNG 1920&times;1080</button>
-        <button type="button" class="exportBtn exportAllBtn" id="exportAllBtn">Export all 3</button>
+      <div class="row">
+        <button id="btn-autoface-all" class="btn" type="button">Auto-detect faces on all panels</button>
+        <button id="btn-centre-all" class="btn" type="button">Centre all crops</button>
       </div>
     </div>
-    <div id="canvasFrame">
-      <canvas id="coverCanvas" width="1920" height="1080"></canvas>
+
+    <div class="card" id="card-layout">
+      <h2>2 · Layout &amp; grade</h2>
+      <label class="field">Layout template — <span id="template-name">Mosaic Eight</span>
+        <select id="select-template"></select>
+      </label>
+      <label class="field">Colour grade — <span id="grade-name">Neon</span>
+        <select id="select-grade"></select>
+      </label>
+      <label class="field">Grade strength <output id="grade-strength-out">80%</output>
+        <input id="range-grade-strength" type="range" min="0" max="100" value="80">
+      </label>
     </div>
-    <p id="previewHint">Click a panel to select it &middot; drag inside a panel to move its face focus point &middot; every change redraws live.</p>
-    <p id="exportStatus" aria-live="polite"></p>
+
+    <div class="card" id="card-caption">
+      <h2>3 · Caption</h2>
+      <label class="field">Cover caption
+        <input id="input-caption" type="text" value="VICE CITY" maxlength="48">
+      </label>
+      <label class="field">Caption style
+        <select id="select-caption-style">
+          <option value="sunset">Sunset outline</option>
+          <option value="neon" selected>Neon glow</option>
+          <option value="solid">Solid block</option>
+          <option value="gold">Gold foil</option>
+          <option value="vicepink">Vice pink</option>
+        </select>
+      </label>
+      <label class="field">Caption size <output id="caption-size-out">auto-fit</output>
+        <input id="range-caption-size" type="range" min="60" max="140" value="100">
+      </label>
+    </div>
+
+    <div class="card" id="card-panels">
+      <h2>4 · Panels &amp; cast</h2>
+      <p class="hint">Each panel gets its own photo, zoom and cast role tag. Tags sit at the top of each panel, clear of the caption and billing strip.</p>
+      <div id="panel-list"></div>
+    </div>
+
+    <div class="card" id="card-callouts">
+      <h2>5 · Callouts</h2>
+      <p class="hint">Annotation labels with leader lines pointing at a panel. The position slider swings each label around its panel.</p>
+      <div id="callout-list"></div>
+      <button id="btn-add-callout" class="btn" type="button">+ Add callout</button>
+    </div>
+
+    <div class="card" id="card-seal">
+      <h2>6 · Seal &amp; billing</h2>
+      <label class="field">Seal text
+        <input id="input-seal" type="text" value="VICE CITY" maxlength="24">
+      </label>
+      <label class="field">Seal year line
+        <input id="input-seal-year" type="text" value="EST. 2026" maxlength="16">
+      </label>
+      <label class="field">Billing block — cast &amp; crew credits
+        <input id="input-billing" type="text" value="STARRING LUCIA &amp; JASON — A LEONIDA PICTURE" maxlength="90">
+      </label>
+    </div>
+
+    <div class="card" id="card-export">
+      <h2>7 · Export PNG</h2>
+      <p class="hint">Three post sizes, one click each — or all three at once. The PNG downloads straight from your browser; nothing is uploaded anywhere.</p>
+      <div class="row wrap">
+        <button class="btn btn-export" data-export="1080x1080" type="button">Square 1080 × 1080</button>
+        <button class="btn btn-export" data-export="1080x1350" type="button">Portrait 1080 × 1350</button>
+        <button class="btn btn-export" data-export="1920x1080" type="button">Landscape 1920 × 1080</button>
+      </div>
+      <p id="export-status" class="status" role="status">Ready — pick a size to export your cover.</p>
+      <p class="hint">Last export:</p>
+      <img id="last-export" alt="Your last exported cover preview" hidden>
+    </div>
   </section>
 
-  <aside id="controlPanel" aria-label="Cover controls">
-
-    <section class="controlSection" id="photoSection">
-      <h2 class="sectionTitle">1 &middot; Photos</h2>
-      <p class="sectionHelp">Load your own photo, or start from a sample. Photos never leave your machine.</p>
-      <div class="buttonRow">
-        <label class="uploadLabel" for="photoFileInput">Upload photo&hellip;</label>
-        <input type="file" id="photoFileInput" accept="image/*">
-        <button type="button" class="miniBtn" id="sampleBoulevardBtn">Sample: Boulevard</button>
-        <button type="button" class="miniBtn" id="samplePierBtn">Sample: Pier</button>
-      </div>
-      <div class="buttonRow">
-        <button type="button" class="miniBtn" id="applyToAllBtn">Use this photo in every panel</button>
-        <button type="button" class="miniBtn" id="alternateSamplesBtn">Alternate both samples</button>
-      </div>
-      <p class="fieldNote">Selected panel: <strong id="selectedPanelLabel">Panel 1</strong></p>
-    </section>
-
-    <section class="controlSection" id="layoutSection">
-      <h2 class="sectionTitle">2 &middot; Layout — 8 templates</h2>
-      <div id="layoutGrid" role="group" aria-label="Layout templates"></div>
-    </section>
-
-    <section class="controlSection" id="gradeSection">
-      <h2 class="sectionTitle">3 &middot; Colour grade — 8 grades</h2>
-      <div id="gradeGrid" role="group" aria-label="Colour grades"></div>
-      <label class="sliderLabel" for="gradeStrengthSlider">Grade strength <span id="gradeStrengthValue">70%</span></label>
-      <input type="range" id="gradeStrengthSlider" min="0" max="100" value="70">
-    </section>
-
-    <section class="controlSection" id="captionSection">
-      <h2 class="sectionTitle">4 &middot; Caption</h2>
-      <label class="textLabel" for="captionInput">Cover caption</label>
-      <input type="text" id="captionInput" value="VICE CITY" maxlength="48" spellcheck="false">
-      <label class="textLabel" for="captionStyleSelect">Caption style</label>
-      <select id="captionStyleSelect">
-        <option value="sunset">Sunset outline</option>
-        <option value="neon" selected>Neon glow</option>
-        <option value="solid">Solid block</option>
-        <option value="gold">Gold foil</option>
-        <option value="vicepink">Vice pink</option>
-      </select>
-      <p class="fieldNote">Long captions auto-fit: lettering shrinks until it fits the cover width.</p>
-    </section>
-
-    <section class="controlSection" id="panelSection">
-      <h2 class="sectionTitle">5 &middot; Selected panel</h2>
-      <label class="sliderLabel" for="panelZoomSlider">Zoom <span id="panelZoomValue">1.20&times;</span></label>
-      <input type="range" id="panelZoomSlider" min="100" max="300" value="120">
-      <label class="sliderLabel" for="focusXSlider">Focus point — horizontal <span id="focusXValue">50%</span></label>
-      <input type="range" id="focusXSlider" min="0" max="100" value="50">
-      <label class="sliderLabel" for="focusYSlider">Focus point — vertical <span id="focusYValue">42%</span></label>
-      <input type="range" id="focusYSlider" min="0" max="100" value="42">
-      <div class="buttonRow">
-        <button type="button" class="miniBtn" id="autoFaceBtn">Auto-detect face</button>
-        <button type="button" class="miniBtn" id="autoFaceAllBtn">Auto-face every panel</button>
-        <button type="button" class="miniBtn" id="centreFocusBtn">Centre focus</button>
-      </div>
-      <label class="textLabel" for="roleSelect">Cast role tag</label>
-      <select id="roleSelect">
-        <option value="">No tag</option>
-        <option value="LEAD" selected>LEAD</option>
-        <option value="CREW">CREW</option>
-        <option value="RIVAL">RIVAL</option>
-        <option value="DRIVER">DRIVER</option>
-        <option value="LOOKOUT">LOOKOUT</option>
-        <option value="ENFORCER">ENFORCER</option>
-        <option value="FIXER">FIXER</option>
-        <option value="WHEELMAN">WHEELMAN</option>
-        <option value="CUSTOM">Custom&hellip;</option>
-      </select>
-      <label class="textLabel" for="customRoleInput">Custom role text</label>
-      <input type="text" id="customRoleInput" value="" maxlength="18" placeholder="e.g. GETAWAY" spellcheck="false">
-    </section>
-
-    <section class="controlSection" id="calloutSection">
-      <h2 class="sectionTitle">6 &middot; Callouts</h2>
-      <p class="sectionHelp">Annotation labels with leader lines pointing at the poster.</p>
-      <div class="calloutRow" id="calloutRow0">
-        <input type="text" class="calloutText" id="calloutText0" value="THE HEIST BEGINS" maxlength="40" spellcheck="false">
-        <label class="sliderLabel" for="calloutPos0">Position <span id="calloutPosValue0">32%</span></label>
-        <input type="range" class="calloutPos" id="calloutPos0" min="0" max="100" value="32">
-      </div>
-      <div class="calloutRow" id="calloutRow1">
-        <input type="text" class="calloutText" id="calloutText1" value="OCEAN DRIVE, 2AM" maxlength="40" spellcheck="false">
-        <label class="sliderLabel" for="calloutPos1">Position <span id="calloutPosValue1">62%</span></label>
-        <input type="range" class="calloutPos" id="calloutPos1" min="0" max="100" value="62">
-      </div>
-      <div class="calloutRow" id="calloutRow2">
-        <input type="text" class="calloutText" id="calloutText2" value="" maxlength="40" placeholder="Third callout (optional)" spellcheck="false">
-        <label class="sliderLabel" for="calloutPos2">Position <span id="calloutPosValue2">85%</span></label>
-        <input type="range" class="calloutPos" id="calloutPos2" min="0" max="100" value="85">
-      </div>
-    </section>
-
-    <section class="controlSection" id="sealBillingSection">
-      <h2 class="sectionTitle">7 &middot; Seal &amp; billing</h2>
-      <label class="textLabel" for="sealTextInput">Seal stamp text</label>
-      <input type="text" id="sealTextInput" value="VICE CITY" maxlength="20" spellcheck="false">
-      <label class="textLabel" for="billingInput">Billing block — cast &amp; crew credits</label>
-      <input type="text" id="billingInput" value="STARRING LUCIA &amp; JASON &middot; A LEONIDA STORY &middot; NEON VICE PICTURES" maxlength="120" spellcheck="false">
-      <p class="fieldNote">The seal stamps the cover corner; the billing strip runs along the bottom.</p>
-    </section>
-
-    <section class="controlSection" id="aboutSection">
-      <h2 class="sectionTitle">About this app</h2>
-      <p class="sectionHelp">Neon Vice Cover Studio builds GTA 6-style poster covers from your own
-      photos. Fonts Anton, Archivo Black and Oswald ship under the SIL Open Font License
-      (see <code>app/fonts/OFL.txt</code>). No Rockstar artwork, logo or font is used. Works
-      fully offline — no network requests, no uploads.</p>
-    </section>
-
-  </aside>
+  <section class="preview" aria-label="Live cover preview">
+    <div class="preview-bar">
+      <span id="preview-size-label">Preview — 1080 × 1080 square</span>
+      <label class="field inline">Preview size
+        <select id="select-preview-size">
+          <option value="1080x1080" selected>Square 1080 × 1080</option>
+          <option value="1080x1350">Portrait 1080 × 1350</option>
+          <option value="1920x1080">Landscape 1920 × 1080</option>
+        </select>
+      </label>
+    </div>
+    <div class="canvas-wrap">
+      <canvas id="cover-canvas" width="1080" height="1080"></canvas>
+    </div>
+    <p class="hint">Live preview — drag on any panel to move its face focus point. The caption auto-fits so long titles never overflow.</p>
+    <ol class="steps">
+      <li>Load a photo (or use a sample)</li>
+      <li>Pick a layout, grade and caption</li>
+      <li>Tag your cast and add callouts</li>
+      <li>Export PNG — done</li>
+    </ol>
+  </section>
 </main>
+
+<footer class="foot">
+  <p>Neon Vice Cover Studio — an original cover maker. No Rockstar Games logo, artwork, character or font is used. Fonts: Bebas Neue, Barlow Condensed Bold and Montserrat, all under the SIL Open Font License (see app/fonts/OFL.txt).</p>
+</footer>
 
 <script src="app.js"></script>
 </body>

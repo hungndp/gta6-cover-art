@@ -1,4 +1,17 @@
+Fonts shipped with Neon Vice Cover Studio
+=========================================
+BebasNeue-Regular.ttf — Bebas Neue, Copyright 2010 by Dharma Type.
+BarlowCondensed-Bold.ttf — Barlow Condensed Bold, Copyright 2017 by Jeremy Tribby.
+Montserrat-Variable.ttf — Montserrat Variable, Copyright 2011 by Julieta Ulanovsky.
+
+All three fonts are licensed under the SIL Open Font License, Version 1.1,
+copied in full below. The full licence text is also available with a FAQ at:
+http://scripts.sil.org/OFL
+
+
+-----------------------------------------------------------
 SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007
+-----------------------------------------------------------
 
 PREAMBLE
 The goals of the Open Font License (OFL) are to stimulate worldwide
@@ -82,11 +95,3 @@ INCLUDING ANY GENERAL, SPECIAL, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL
 DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
 OTHER DEALINGS IN THE FONT SOFTWARE.
-
-Fonts bundled with this app under the SIL Open Font License 1.1:
-- Anton Regular, Copyright 2020 The Anton Project Authors
-  (https://github.com/googlefonts/AntonFont) — Reserved Font Name: Anton
-- Archivo Black Regular, Copyright 2017 The Archivo Black Project Authors
-  (https://github.com/Omnibus-Type/ArchivoBlack) — Reserved Font Name: Archivo Black
-- Oswald Variable (weight axis), Copyright 2016 The Oswald Project Authors
-  (https://github.com/googlefonts/OswaldFont) — Reserved Font Name: Oswald
