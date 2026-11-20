@@ -1,42 +1,52 @@
-// Neon Vice Cover Studio — entrypoint for make.fun's gta6-cover-art-01.
-// Copies app/ and screenshots/ into the output directory and writes the
-// dossier with the kit's buildDossier. The output directory itself is
-// NEVER removed: the grader mounts it as a volume, so deleting it fails
-// with EPERM. We create it if missing and clear only its CONTENTS,
-// entry by entry, then copy the app in.
-import { cpSync, existsSync, mkdirSync, readdirSync, rmSync, writeFileSync } from "node:fs";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
-import { buildDossier } from "./vendor/makefun-app.ts";
+// Neon Vice Cover Studio v3 — make.fun entrypoint.
+//
+// The grader mounts the output directory itself, so this script must
+// never remove the directory: it creates it if needed, clears only the
+// entries INSIDE it, then copies the app and screenshots in and writes
+// the dossier the scorer expects.
+import { chmodSync, cpSync, mkdirSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { buildDossier } from './vendor/makefun-app.ts';
 
-const repoRoot = dirname(fileURLToPath(import.meta.url));
-const outDir = process.env.MAKEFUN_OUTPUT_DIR || "/output";
+const rootDir = dirname(fileURLToPath(import.meta.url));
+const outDir = process.env.MAKEFUN_OUTPUT_DIR || '/output';
 
-function clearDirectoryContents(dir) {
-  // Remove every entry inside dir, but never dir itself.
-  for (const entry of readdirSync(dir)) {
-    rmSync(join(dir, entry), { recursive: true, force: true });
+mkdirSync(outDir, { recursive: true });
+
+// Remove one entry from the output dir. A previous run may have copied in
+// read-only directory modes (source checkouts can be a-w), which would
+// otherwise make a re-run fail while emptying a folder it owns: loosen
+// the modes on our own leftovers, then remove.
+function clearEntry(path: string): void {
+  try {
+    rmSync(path, { recursive: true, force: true });
+  } catch {
+    const loosen = (p: string): void => {
+      const st = statSync(p);
+      chmodSync(p, st.isDirectory() ? 0o755 : 0o644);
+      if (st.isDirectory()) for (const name of readdirSync(p)) loosen(join(p, name));
+    };
+    loosen(path);
+    rmSync(path, { recursive: true, force: true });
   }
 }
 
-function main() {
-  mkdirSync(outDir, { recursive: true });
-  clearDirectoryContents(outDir);
-  const appSrc = join(repoRoot, "app");
-  const shotsSrc = join(repoRoot, "screenshots");
-  if (!existsSync(appSrc)) throw new Error("app/ directory is missing from the repository");
-  cpSync(appSrc, join(outDir, "app"), { recursive: true });
-  if (existsSync(shotsSrc)) {
-    cpSync(shotsSrc, join(outDir, "screenshots"), { recursive: true });
-  }
-  const dossier = buildDossier(outDir, {
-    text_max_bytes: 163840,
-    screenshots: { max: 4, max_bytes: 262144 },
-    app_max_files: 993,
-    app_max_bytes: 50331648,
-  });
-  writeFileSync(join(outDir, "dossier.json"), dossier);
-  console.log("Wrote dossier.json (" + dossier.length + " bytes) to " + outDir);
+// Clear the previous run's contents without touching the directory itself.
+for (const name of readdirSync(outDir)) {
+  clearEntry(join(outDir, name));
 }
 
-main();
+cpSync(join(rootDir, 'app'), join(outDir, 'app'), { recursive: true });
+cpSync(join(rootDir, 'screenshots'), join(outDir, 'screenshots'), { recursive: true });
+
+const dossier = buildDossier(outDir, {
+  text_max_bytes: 163840,
+  screenshots: { max: 4, max_bytes: 262144 },
+  app_max_files: 993,
+  app_max_bytes: 48 * 1024 * 1024,
+});
+writeFileSync(join(outDir, 'dossier.json'), dossier);
+
+const shotCount = readdirSync(join(outDir, 'screenshots')).length;
+console.log(`neon-vice-cover-studio: wrote app/, screenshots/ (${shotCount} shots) and dossier.json (${dossier.length} bytes) to ${outDir}`);
