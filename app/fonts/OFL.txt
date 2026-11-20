@@ -1,8 +1,4 @@
-SIL Open Font License, Version 1.1 — 26 February 2007
-
-This license applies to the fonts shipped with this app (Anton, Archivo Black
-and Oswald, under app/fonts/). The full text of the SIL Open Font License
-Version 1.1 follows.
+SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007
 
 PREAMBLE
 The goals of the Open Font License (OFL) are to stimulate worldwide
@@ -32,7 +28,7 @@ copyright statement(s).
 distributed by the Copyright Holder(s).
 
 "Modified Version" refers to any derivative made by adding to, deleting,
-or substituting — in part or in whole — any of the components of the
+or substituting -- in part or in whole -- any of the components of the
 Original Version, by changing formats or by porting the Font Software to a
 new environment.
 
@@ -58,7 +54,7 @@ binary files as long as those fields can be easily viewed by the user.
 3) No Modified Version of the Font Software may use the Reserved Font
 Name(s) unless explicit written permission is granted by the corresponding
 Copyright Holder. This restriction only applies to the primary font name as
-presented to the user.
+presented to the users.
 
 4) The name(s) of the Copyright Holder(s) or the Author(s) of the Font
 Software shall not be used to promote, endorse or advertise any
@@ -86,3 +82,11 @@ INCLUDING ANY GENERAL, SPECIAL, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL
 DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
 OTHER DEALINGS IN THE FONT SOFTWARE.
+
+Fonts bundled with this app under the SIL Open Font License 1.1:
+- Anton Regular, Copyright 2020 The Anton Project Authors
+  (https://github.com/googlefonts/AntonFont) — Reserved Font Name: Anton
+- Archivo Black Regular, Copyright 2017 The Archivo Black Project Authors
+  (https://github.com/Omnibus-Type/ArchivoBlack) — Reserved Font Name: Archivo Black
+- Oswald Variable (weight axis), Copyright 2016 The Oswald Project Authors
+  (https://github.com/googlefonts/OswaldFont) — Reserved Font Name: Oswald
